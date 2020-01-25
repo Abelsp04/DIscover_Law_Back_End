@@ -61,8 +61,8 @@ def get_user():
 
     return "Invalid Method", 404
 
-@app.route('/contact/<int:contact_id>', methods=['PUT', 'GET', 'DELETE'])
-def get_single_contact(contact_id):
+@app.route('/user/<int:user_id>', methods=['PUT', 'GET', 'DELETE'])
+def get_single_contact(user_id):
     """
     Single contact
     """
@@ -73,35 +73,35 @@ def get_single_contact(contact_id):
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
 
-        contact1 = Contact.query.get(contact_id)
-        if contact1 is None:
+        user1 = User.query.get(user_id)
+        if user1 is None:
             raise APIException('User not found', status_code=404)
 
         if "name" in body:
-            contact1.name = body["name"]
+            user1.name = body["name"]
         if "password" in body:
-            contact1.password = body["password"]
+            user1.password = body["password"]
         if "email" in body:
-            contact1.email = body["email"]
+            user1.email = body["email"]
         if "zipcode" in body:
-            contact1.zipcode = body["zipcode"]
+            user1.zipcode = body["zipcode"]
         db.session.commit()
 
-        return jsonify(contact1.serialize()), 200
+        return jsonify(user1.serialize()), 200
 
     # GET request
     if request.method == 'GET':
-        contact1 = Contact.query.get(contact_id)
-        if contact1 is None:
+        user1 = User.query.get(user_id)
+        if user1 is None:
             raise APIException('User not found', status_code=404)
-        return jsonify(contact1.serialize()), 200
+        return jsonify(user1.serialize()), 200
 
     # DELETE request
     if request.method == 'DELETE':
-        contact1 = Contact.query.get(contact_id)
-        if contact1 is None:
+        user1 = User.query.get(user_id)
+        if user1 is None:
             raise APIException('User not found', status_code=404)
-        db.session.delete(contact1)
+        db.session.delete(user1)
         db.session.commit()
         return "ok", 200
 
