@@ -145,7 +145,51 @@ def get_lawyer():
     return "Invalid Method", 404
 
 
+@app.route('/lawyer/<int:lawyer_id>', methods=['PUT', 'GET', 'DELETE'])
+def get_single_contact_lawyer(lawyer_id):
+    """
+    Single contact
+    """
 
+    # PUT request
+    if request.method == 'PUT':
+        body = request.get_json()
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+
+        lawyer1 = Lawyer.query.get(lawyer_id)
+        if lawyer1 is None:
+            raise APIException('Lawyer not found', status_code=404)
+
+        if "name" in body:
+            lawyer1.name = body["name"]
+        if "password" in body:
+            lawyer1.password = body["password"]
+        if "email" in body:
+            lawyer1.email = body["email"]
+        if "zipcode" in body:
+            lawyer1.zipcode = body["zipcode"]
+        db.session.commit()
+
+        return jsonify(lawyer1.serialize()), 200
+
+    # GET request
+    if request.method == 'GET':
+        lawyer1 = Lawyer.query.get(lawyer_id)
+        if lawyer1 is None:
+            raise APIException('Lawyer not found', status_code=404)
+        return jsonify(lawyer1.serialize()), 200
+
+    # DELETE request
+    if request.method == 'DELETE':
+        lawyer1 = Lawyer.query.get(lawyer_id)
+        if lawyer1 is None:
+            raise APIException('Lawyer not found', status_code=404)
+        db.session.delete(lawyer1)
+        db.session.commit()
+        return "ok", 200
+
+    return "Invalid Method", 404
 
 
 
