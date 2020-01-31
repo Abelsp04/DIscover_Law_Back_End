@@ -3,6 +3,23 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey, Integer, String
 db = SQLAlchemy()
 
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # name = db.Column(db.String(80), unique=False, nullable=False)
+    question = db.Column(db.String(1000), unique=False, nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+
+    def __repr__(self): 
+        return '<Question %r>' % self.question
+
+    def serialize(self):
+        return {
+            "question": self.question,
+            "id": self.id
+        
+        }
+
 class User(db.Model):
     __tablename__='user'
     id = db.Column(db.Integer, primary_key=True)
@@ -10,6 +27,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=False, nullable=False)
     zipcode = db.Column(db.String(120), unique=False, nullable=False)
+    questions = db.relationship(Question)
 
     def __repr__(self): 
         return '<User %r>' % self.name
@@ -23,26 +41,25 @@ class User(db.Model):
             "id": self.id
         }
 
-class Question(db.Model):
+class Answers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # name = db.Column(db.String(80), unique=False, nullable=False)
-    question = db.Column(db.String(1000), unique=False, nullable=False)
-    user = relationship(User)
-    user_id = Column(Integer, ForeignKey('user.id'))
-
+    name = db.Column(db.String(80), unique=False, nullable=False)
+    text = db.Column(db.String(1000), unique=False, nullable=False)
+    lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
 
     def __repr__(self): 
-        return '<Question %r>' % self.question
+        return '<Answers %r>' % self.answers
 
     def serialize(self):
         return {
-            "question": self.question,
-         
-            "id": self.id,
+            "name": self.name,
+            "answers": self.answers,
+            "id": self.id
         
         }
 
 class Lawyer(db.Model):
+    __tablename__='lawyer'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -50,6 +67,7 @@ class Lawyer(db.Model):
     zipcode = db.Column(db.String(120), unique=False, nullable=False)
     lawfirm = db.Column(db.String(120), unique=False, nullable=False)
     phone = db.Column(db.String(120), unique=False, nullable=False)
+    answers = db.relationship(Answers)
 
     def __repr__(self): 
         return '<Lawyer %r>' % self.name
@@ -67,9 +85,3 @@ class Lawyer(db.Model):
         }
 
 
-# class Answers(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(80), unique=False, nullable=False)
-#     answers = db.Column(db.String(1000), unique=False, nullable=False)
-#     lawyer = relationship(Lawyer)
-#     lawyer_id = Column(Integer, ForeingKey("lawyer_id"))
