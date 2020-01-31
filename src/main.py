@@ -8,6 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap, send_mail
 from models import db, User, Lawyer
+from sqlalchemy import Column, ForeignKey, Integer, String
 #from models import Person
 
 app = Flask(__name__)

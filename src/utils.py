@@ -1,7 +1,7 @@
 from flask import jsonify, url_for
 import os
 import requests
-
+from sqlalchemy import Column, ForeignKey, Integer, String
 class APIException(Exception):
     status_code = 400
 
@@ -49,7 +49,7 @@ def send_mail(emails=[], subject='Empty Subject', content=''):
     return requests.post(
         "https://api.mailgun.net/v3/"+domain+"/messages",
         auth=("api", key),
-        data={"from": "Excited User <mailgun@"+domain+">",
+        data={"from": "DiscoverLaw User <mailgun@"+domain+">",
               "to": emails,
               "subject": subject,
               "text": content})

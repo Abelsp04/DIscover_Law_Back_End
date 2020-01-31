@@ -1,12 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
-
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey, Integer, String
 db = SQLAlchemy()
 
 class User(db.Model):
+    __tablename__='user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=False, nullable=False)
     zipcode = db.Column(db.String(120), unique=False, nullable=False)
 
     def __repr__(self): 
@@ -21,6 +23,25 @@ class User(db.Model):
             "id": self.id
         }
 
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # name = db.Column(db.String(80), unique=False, nullable=False)
+    question = db.Column(db.String(1000), unique=False, nullable=False)
+    user = relationship(User)
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+
+    def __repr__(self): 
+        return '<Question %r>' % self.question
+
+    def serialize(self):
+        return {
+            "question": self.question,
+         
+            "id": self.id,
+        
+        }
+
 class Lawyer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=False, nullable=False)
@@ -28,6 +49,7 @@ class Lawyer(db.Model):
     password = db.Column(db.String(120), unique=True, nullable=False)
     zipcode = db.Column(db.String(120), unique=False, nullable=False)
     lawfirm = db.Column(db.String(120), unique=False, nullable=False)
+    phone = db.Column(db.String(120), unique=False, nullable=False)
 
     def __repr__(self): 
         return '<Lawyer %r>' % self.name
@@ -39,6 +61,15 @@ class Lawyer(db.Model):
             "password": self.password,
             "zipcode": self.zipcode,
             "id": self.id,
-            "lawfirm": self.lawfirm
+            "lawfirm": self.lawfirm,
+            "phone": self.phone
 
         }
+
+
+# class Answers(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(80), unique=False, nullable=False)
+#     answers = db.Column(db.String(1000), unique=False, nullable=False)
+#     lawyer = relationship(Lawyer)
+#     lawyer_id = Column(Integer, ForeingKey("lawyer_id"))
