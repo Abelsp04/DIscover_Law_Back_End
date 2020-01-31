@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
-from utils import APIException, generate_sitemap
+from utils import APIException, generate_sitemap, send_mail
 from models import db, User, Lawyer
 #from models import Person
 
@@ -192,7 +192,11 @@ def get_single_contact_lawyer(lawyer_id):
     return "Invalid Method", 404
 
 
+@app.route('/test_email', methods=['GET'])
+def test_send_email():
+    send_mail("eduardopuermas@hotmail.com", "Testing the email", "Hello")
 
+    return "Succesfully sent", 200
 
 
 
