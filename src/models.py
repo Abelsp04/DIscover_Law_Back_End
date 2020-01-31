@@ -66,7 +66,7 @@ class Lawyer(db.Model):
     password = db.Column(db.String(120), unique=True, nullable=False)
     zipcode = db.Column(db.String(120), unique=False, nullable=False)
     lawfirm = db.Column(db.String(120), unique=False, nullable=False)
-    phone = db.Column(db.String(120), unique=False, nullable=False)
+    phone = db.Column(db.String(120), unique=False, nullable=True)
     answers = db.relationship(Answers)
 
     def __repr__(self): 
@@ -81,7 +81,4 @@ class Lawyer(db.Model):
             "id": self.id,
             "lawfirm": self.lawfirm,
             "phone": self.phone
-
         }
-
-
