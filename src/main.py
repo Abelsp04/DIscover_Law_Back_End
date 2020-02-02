@@ -122,16 +122,18 @@ def get_lawyer():
 
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
-        if "name" not in body:
+        if 'name' not in body:
             raise APIException('You need to specify the name', status_code=400)
         if 'password' not in body:
             raise APIException('You need to specify the password', status_code=400)
         if 'email' not in body:
             raise APIException('You need to specify the email', status_code=400)
         if 'zipcode' not in body:
-            body['zipcode'] = None
+            raise APIException('You need to specify the zipcode', status_code=400)
+        if 'phone' not in body:
+            body['phone'] = None
 
-        lawyer1 = Lawyer(name=body['name'], password = body['password'], email = body['email'], zipcode = body['zipcode'], lawfirm= body['lawfirm'])
+        lawyer1 = Lawyer(name=body['name'], password = body['password'], email = body['email'], zipcode = body['zipcode'],phone = body['phone'], lawfirm= body['lawfirm'])
         db.session.add(lawyer1)
         db.session.commit()
 
@@ -170,6 +172,8 @@ def get_single_contact_lawyer(lawyer_id):
             lawyer1.email = body["email"]
         if "zipcode" in body:
             lawyer1.zipcode = body["zipcode"]
+        if "phone" in body:
+            lawyer1.phone = body["phone"]
         db.session.commit()
 
         return jsonify(lawyer1.serialize()), 200
