@@ -9,6 +9,9 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap, send_mail
 from models import db, User, Lawyer
 from sqlalchemy import Column, ForeignKey, Integer, String
+from flask_jwt_simple import (
+    JWTManager, jwt_required, create_jwt, get_jwt_identity
+)
 #from models import Person
 
 app = Flask(__name__)
@@ -19,6 +22,10 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 
+# Setup the Flask-JWT-Simple extension for example
+app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
+jwt = JWTManager(app)
+
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -28,6 +35,26 @@ def handle_invalid_usage(error):
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
+
+@app.route('/login', methods=['POST'])
+def login():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+    params = request.get_json()
+    email = params.get('email', None)
+    password = params.get('password', None)
+    if not email:
+        return jsonify({"msg": "Missing email in request"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password in request"}), 400
+    # check for user in database
+    usercheck = User.query.filter_by(email=email, password=password).first()
+    # if user not found
+    if usercheck == None:
+        return jsonify({"msg": "Invalid credentials provided"}), 401
+    #if user found, Identity can be any data that is json serializable
+    ret = {'jwt': create_jwt(identity=username)}
+    return jsonify(ret), 200
 
 @app.route('/user', methods=['POST', 'GET'])
 def get_user():
@@ -199,7 +226,7 @@ def get_single_contact_lawyer(lawyer_id):
 
 @app.route('/test_email', methods=['GET'])
 def test_send_email():
-    send_mail("eduardopuermas@hotmail.com", "Testing the email", "Hello")
+    send_mail("juanfco0128@gmail.com", "Testing the email", "Hello")
 
     return "Succesfully sent", 200
 
