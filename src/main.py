@@ -81,7 +81,7 @@ def get_user():
 
         return "ok", 200
     
-    # GET request
+# GET request
     if request.method == 'GET':
         all_user = User.query.all()
         all_user = list(map(lambda x: x.serialize(), all_user))
@@ -95,7 +95,7 @@ def get_single_contact(user_id):
     Single contact
     """
 
-    # PUT request
+# PUT request
     if request.method == 'PUT':
         body = request.get_json()
         if body is None:
@@ -117,14 +117,14 @@ def get_single_contact(user_id):
 
         return jsonify(user1.serialize()), 200
 
-    # GET request
+# GET request
     if request.method == 'GET':
         user1 = User.query.get(user_id)
         if user1 is None:
             raise APIException('User not found', status_code=404)
         return jsonify(user1.serialize()), 200
 
-    # DELETE request
+# DELETE request
     if request.method == 'DELETE':
         user1 = User.query.get(user_id)
         if user1 is None:
@@ -166,7 +166,7 @@ def get_lawyer():
 
         return "ok", 200
     
-    # GET request
+# GET request
     if request.method == 'GET':
         all_lawyer = Lawyer.query.all()
         all_lawyer = list(map(lambda x: x.serialize(), all_lawyer))
@@ -181,7 +181,7 @@ def get_single_contact_lawyer(lawyer_id):
     Single contact
     """
 
-    # PUT request
+# PUT request
     if request.method == 'PUT':
         body = request.get_json()
         if body is None:
@@ -205,14 +205,14 @@ def get_single_contact_lawyer(lawyer_id):
 
         return jsonify(lawyer1.serialize()), 200
 
-    # GET request
+# GET request
     if request.method == 'GET':
         lawyer1 = Lawyer.query.get(lawyer_id)
         if lawyer1 is None:
             raise APIException('Lawyer not found', status_code=404)
         return jsonify(lawyer1.serialize()), 200
 
-    # DELETE request
+# DELETE request
     if request.method == 'DELETE':
         lawyer1 = Lawyer.query.get(lawyer_id)
         if lawyer1 is None:
@@ -231,6 +231,104 @@ def test_send_email():
     return "Succesfully sent", 200
 
 
+# Beginning of Questions
+@app.route('/question', methods=['POST', 'GET'])
+def get_question():
+    
+# GET request
+    if request.method == 'GET':
+        all_question = Question.query.all()
+        all_question = list(map(lambda x: x.serialize(), all_question))
+        return jsonify(all_question), 200
+
+    return "Invalid Method", 404
+
+# POST request
+    if request.method == 'POST':
+        body = request.get_json()
+
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+        if 'question' not in body:
+            raise APIException('You need to specify the question', status_code=400)
+
+        question1 = Question
+        db.session.add(question1)
+        db.session.commit()
+
+        return "ok", 200
+
+# PUT request
+    if request.method == 'PUT':
+        body = request.get_json()
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+
+        question1 = Question.query.get(question_id)
+        if question1 is None:
+            raise APIException('Question not found', status_code=404)
+
+        if "question" in body:
+            question1.name = body["question"]
+        db.session.commit()
+
+        return jsonify(question1.serialize()), 200
+# End of Questions
+
+
+# Beginning of Answers
+@app.route('/answers', methods=['POST', 'GET'])
+def get_answers():
+    
+# GET request
+    if request.method == 'GET':
+        all_answers = Question.query.all()
+        all_answers = list(map(lambda x: x.serialize(), all_answers))
+        return jsonify(all_answers), 200
+
+    return "Invalid Method", 404
+
+# POST request
+    if request.method == 'POST':
+        body = request.get_json()
+
+        if answers is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+        if 'answers' not in body:
+            raise APIException('You need to specify the answer', status_code=400)
+
+        answers1 = Answers
+        db.session.add(answers1)
+        db.session.commit()
+
+        return "ok", 200
+
+        if request.method == 'PUT':
+            body = request.get_json()
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+
+        answers1 = Answers.query.get(answers_id)
+        if answers1 is None:
+            raise APIException('Answer not found', status_code=404)
+
+        if "answer" in body:
+            answers1.name = body["answers"]
+        db.session.commit()
+
+        return jsonify(answers1.serialize()), 200
+
+# DELETE request
+    if request.method == 'DELETE':
+        answers1 = Answers.query.get(answers_id)
+        if answer1 is None:
+            raise APIException('Answer not found', status_code=404)
+        db.session.delete(answer1)
+        db.session.commit()
+        return "ok", 200
+
+    return "Invalid Method", 404
+#End of Answers
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

@@ -43,8 +43,7 @@ class User(db.Model):
 
 class Answers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=False, nullable=False)
-    text = db.Column(db.String(1000), unique=False, nullable=False)
+    answers = db.Column(db.String(1000), unique=False, nullable=False)
     lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
 
     def __repr__(self): 
@@ -52,7 +51,6 @@ class Answers(db.Model):
 
     def serialize(self):
         return {
-            "name": self.name,
             "answers": self.answers,
             "id": self.id
         
