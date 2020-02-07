@@ -241,8 +241,6 @@ def get_question():
         all_question = list(map(lambda x: x.serialize(), all_question))
         return jsonify(all_question), 200
 
-    return "Invalid Method", 404
-
 # POST request
     if request.method == 'POST':
         body = request.get_json()
@@ -252,11 +250,12 @@ def get_question():
         if 'question' not in body:
             raise APIException('You need to specify the question', status_code=400)
 
-        question1 = Question
+        question1 = Question(question=body['question'])
         db.session.add(question1)
         db.session.commit()
 
         return "ok", 200
+    
 ##### END POST AND GET####################
 
 @app.route('/question/<int:question_id>', methods=['PUT', 'GET', 'DELETE'])
@@ -309,12 +308,12 @@ def get_answers():
     if request.method == 'POST':
         body = request.get_json()
 
-        if answers is None:
+        if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
         if 'answers' not in body:
             raise APIException('You need to specify the answer', status_code=400)
 
-        answers1 = Answers
+        answers1 = Answer(answer=body['answers'])
         db.session.add(answers1)
         db.session.commit()
 
