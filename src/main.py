@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap, send_mail
-from models import db, User, Lawyer
+from models import db, User, Lawyer, Answers, Question
 from sqlalchemy import Column, ForeignKey, Integer, String
 from flask_jwt_simple import (
     JWTManager, jwt_required, create_jwt, get_jwt_identity
@@ -222,7 +222,7 @@ def get_single_contact_lawyer(lawyer_id):
         return "ok", 200
 
     return "Invalid Method", 404
-
+################################################################################################################################################################
 
 @app.route('/test_email', methods=['GET'])
 def test_send_email():
@@ -231,7 +231,7 @@ def test_send_email():
     return "Succesfully sent", 200
 
 
-# Beginning of Questions
+# Beginning of Question
 @app.route('/question', methods=['POST', 'GET'])
 def get_question():
     
@@ -257,6 +257,10 @@ def get_question():
         db.session.commit()
 
         return "ok", 200
+##### END POST AND GET####################
+
+@app.route('/question/<int:question_id>', methods=['PUT', 'GET', 'DELETE'])
+def get_single_question(question_id):
 
 # PUT request
     if request.method == 'PUT':
@@ -273,20 +277,33 @@ def get_question():
         db.session.commit()
 
         return jsonify(question1.serialize()), 200
-# End of Questions
-
-
-# Beginning of Answers
-@app.route('/answers', methods=['POST', 'GET'])
-def get_answers():
     
 # GET request
     if request.method == 'GET':
-        all_answers = Question.query.all()
-        all_answers = list(map(lambda x: x.serialize(), all_answers))
-        return jsonify(all_answers), 200
+        question1 = Question.query.get(lawyer_id)
+        if question1 is None:
+            raise APIException('Question not found', status_code=404)
+        return jsonify(question1.serialize()), 200
+
+# DELETE request
+    if request.method == 'DELETE':
+        question1 = Lawyer.query.get(lawyer_id)
+        if question1 is None:
+            raise APIException('Question not found', status_code=404)
+        db.session.delete(question1)
+        db.session.commit()
+        return "ok", 200
 
     return "Invalid Method", 404
+##### GET, PUT, AND DELETE####################
+# End of Questions
+
+
+
+############Beginning of Answers#################
+@app.route('/answers', methods=['POST', 'GET'])
+def get_answers():
+
 
 # POST request
     if request.method == 'POST':
@@ -303,6 +320,20 @@ def get_answers():
 
         return "ok", 200
 
+        
+# GET request
+    if request.method == 'GET':
+        all_answers = Answers.query.all()
+        all_answers = list(map(lambda x: x.serialize(), all_answers))
+        return jsonify(all_answers), 200
+
+    return "Invalid Method", 404
+############End of POST, GET###############
+
+@app.route('/answers/<int:answers_id>', methods=['PUT', 'GET', 'DELETE'])
+def get_single_answers(answers_id):
+
+# PUT Request
         if request.method == 'PUT':
             body = request.get_json()
         if body is None:
@@ -318,17 +349,25 @@ def get_answers():
 
         return jsonify(answers1.serialize()), 200
 
-# DELETE request
-    if request.method == 'DELETE':
-        answers1 = Answers.query.get(answers_id)
-        if answer1 is None:
+# GET request
+        if request.method == 'GET':
+            answers1 = Answers.query.get(lawyer_id)
+        if answers1 is None:
             raise APIException('Answer not found', status_code=404)
-        db.session.delete(answer1)
+        return jsonify(answers1.serialize()), 200
+
+# DELETE request
+        if request.method == 'DELETE':
+            answers1 = Answers.query.get(answers_id)
+        if answers1 is None:
+            raise APIException('Answer not found', status_code=404)
+        db.session.delete(answers1)
         db.session.commit()
         return "ok", 200
 
-    return "Invalid Method", 404
-#End of Answers
+        return "Invalid Method", 404
+#################End of PUT, GET, DELETE###########
+#################End of Answers###################
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
