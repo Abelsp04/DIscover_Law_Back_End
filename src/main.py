@@ -250,7 +250,7 @@ def get_question():
         if 'question' not in body:
             raise APIException('You need to specify the question', status_code=400)
 
-        question1 = Question(question=body['question'])
+        question1 = Question(question=body['question'], user_id=body['user_id'])
         db.session.add(question1)
         db.session.commit()
 
@@ -313,13 +313,12 @@ def get_answers():
         if 'answers' not in body:
             raise APIException('You need to specify the answer', status_code=400)
 
-        answers1 = Answer(answer=body['answers'])
+        answers1 = Answers(answers=body['answers'], lawyer_id=body['lawyer_id'])
         db.session.add(answers1)
         db.session.commit()
 
         return "ok", 200
 
-        
 # GET request
     if request.method == 'GET':
         all_answers = Answers.query.all()
