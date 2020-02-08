@@ -358,11 +358,11 @@ def get_single_answers(answers_id):
 # DELETE request
         if request.method == 'DELETE':
             answers1 = Answers.query.get(answers_id)
-        if answers1 is None:
-            raise APIException('Answer not found', status_code=404)
-        db.session.delete(answers1)
-        db.session.commit()
-        return "ok", 200
+            if answers1 is None:
+                raise APIException('Answer not found', status_code=404)
+            db.session.delete(answers1)
+            db.session.commit()
+            return "ok", 200
 
         return "Invalid Method", 404
 #################End of PUT, GET, DELETE###########
