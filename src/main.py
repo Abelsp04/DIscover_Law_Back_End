@@ -335,18 +335,14 @@ def get_single_answers(answers_id):
 # PUT Request
         if request.method == 'PUT':
             body = request.get_json()
-        if body is None:
-            raise APIException("You need to specify the request body as a json object", status_code=400)
-
-        answers1 = Answers.query.get(answers_id)
-        if answers1 is None:
-            raise APIException('Answer not found', status_code=404)
-
-        if "answer" in body:
-            answers1.name = body["answers"]
-        db.session.commit()
-
-        return jsonify(answers1.serialize()), 200
+            if body is None:
+                raise APIException("You need to specify the request body as a json object", status_code=400)
+            answers1 = Answers.query.get(answers_id)
+            if "answers" in body:
+                answers1.answers = body["answers"]
+                
+            db.session.commit()
+            return jsonify(answers1.serialize()), 200
 
 # GET request
         if request.method == 'GET':
