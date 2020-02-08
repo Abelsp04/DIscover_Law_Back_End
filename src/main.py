@@ -346,11 +346,10 @@ def get_single_answers(answers_id):
 
 # GET request
         if request.method == 'GET':
-            answers1 = Answers.query.get(lawyer_id)
-        if answers1 is None:
-            raise APIException('Answer not found', status_code=404)
-        return jsonify(answers1.serialize()), 200
-
+            answers = Answers.query.get(answers_id)
+            if answers is None:
+                raise APIException('Question not found', status_code=404)
+            return jsonify(answers.serialize()), 200
 # DELETE request
         if request.method == 'DELETE':
             answers1 = Answers.query.get(answers_id)
