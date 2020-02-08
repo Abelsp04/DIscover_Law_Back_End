@@ -70,9 +70,9 @@ class Lawyer(db.Model):
 
 class Answers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    answers = db.Column(db.String(1000), unique=False, nullable=False)
-    lawyer = relationship(Lawyer)
-    lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
+    answers = db.Column(db.String(1000), unique=False, nullable=False)#, default='')
+    # lawyer = relationship(Lawyer)
+    # lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
 
     def __repr__(self): 
         return '<Answers %r>' % self.answers

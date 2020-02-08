@@ -307,13 +307,14 @@ def get_answers():
 # POST request
     if request.method == 'POST':
         body = request.get_json()
+        print(body)
 
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
         if 'answers' not in body:
             raise APIException('You need to specify the answer', status_code=400)
 
-        answers1 = Answers(answers=body['answers'], lawyer_id=body['lawyer_id'])
+        answers1 = Answers(answers=body['answers'])#, lawyer_id=body['lawyer_id'])
         db.session.add(answers1)
         db.session.commit()
 
