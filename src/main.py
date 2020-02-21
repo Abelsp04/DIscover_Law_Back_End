@@ -43,17 +43,27 @@ def login():
     params = request.get_json()
     email = params.get('email', None)
     password = params.get('password', None)
+    kind = params.get('kind', None)
     if not email:
         return jsonify({"msg": "Missing email in request"}), 400
     if not password:
         return jsonify({"msg": "Missing password in request"}), 400
     # check for user in database
+    kind = 'user'
     usercheck = User.query.filter_by(email=email, password=password).first()
+    if usercheck is None:
+        kind = 'lawyer'
+        usercheck = Lawyer.query.filter_by(email=email, password=password).first()
+    
     # if user not found
     if usercheck == None:
         return jsonify({"msg": "Invalid credentials provided"}), 401
     #if user found, Identity can be any data that is json serializable
-    ret = {'jwt': create_jwt(identity=username)}
+    ret = {
+        'jwt': create_jwt(identity=email),
+        'user': usercheck.serialize(),
+        'kind': kind
+    }
     return jsonify(ret), 200
 
 @app.route('/user', methods=['POST', 'GET'])
@@ -74,8 +84,13 @@ def get_user():
             raise APIException('You need to specify the email', status_code=400)
         if 'zipcode' not in body:
             body['zipcode'] = None
-
-        user1 = User(name=body['name'], password = body['password'], email = body['email'], zipcode = body['zipcode'])
+        if 'phone' not in body:
+            raise APIException('You need to specify the phone', status_code=400)
+        if 'kind' not in body:
+            raise APIException('You need to specify the kind', status_code=400)
+        
+        user1 = User(name=body['name'], password = body['password'], email = body['email'], zipcode = body['zipcode'], kind= body['kind'], phone=body['phone'])
+            
         db.session.add(user1)
         db.session.commit()
 
@@ -157,10 +172,12 @@ def get_lawyer():
             raise APIException('You need to specify the email', status_code=400)
         if 'zipcode' not in body:
             raise APIException('You need to specify the zipcode', status_code=400)
+        if 'kind' not in body:
+            raise APIException('You need to specify the kind', status_code=400)
         if 'phone' not in body:
             body['phone'] = None
 
-        lawyer1 = Lawyer(name=body['name'], password = body['password'], email = body['email'], zipcode = body['zipcode'],phone = body['phone'], lawfirm= body['lawfirm'])
+        lawyer1 = Lawyer(name=body['name'], password = body['password'], email = body['email'], zipcode = body['zipcode'],phone = body['phone'], lawfirm= body['lawfirm'], kind= body['kind'])
         db.session.add(lawyer1)
         db.session.commit()
 
@@ -224,12 +241,23 @@ def get_single_contact_lawyer(lawyer_id):
     return "Invalid Method", 404
 ################################################################################################################################################################
 
+# @app.route('/test_email', methods=['POST'])
+# def test_send_email():
+#     body = request.get_json()
+#     print("####",body)
+#     # body = ["abelsegui@hotmail.com", "eduardopuermas@hotmail.com"]
+#     send_mail(body['list'], body['object'], body['message'])
+
+#     return "Succesfully sent", 200
+
 @app.route('/test_email', methods=['GET'])
 def test_send_email():
-    send_mail("juanfco0128@gmail.com", "Testing the email", "Hello")
+    send_mail(["abelsegui@hotmail.com", "eduardopuermas@hotmail.com", "juanfco0128@gmail.com"], "A user has submitted a question", 
+    "Hello! Thank you for using DiscoverLaw!" " "
+    "A user has submitted a question, please follow the link below to answer" " "
+    "https://8080-e4fcd649-6811-4b59-880c-956e7030f32c.ws-us02.gitpod.io/askalawyer")
 
     return "Succesfully sent", 200
-
 
 # Beginning of Question
 @app.route('/question', methods=['POST', 'GET'])
@@ -279,14 +307,14 @@ def get_single_question(question_id):
     
 # GET request
     if request.method == 'GET':
-        question1 = Question.query.get(lawyer_id)
+        question1 = Question.query.get(question_id)
         if question1 is None:
             raise APIException('Question not found', status_code=404)
         return jsonify(question1.serialize()), 200
 
 # DELETE request
     if request.method == 'DELETE':
-        question1 = Lawyer.query.get(lawyer_id)
+        question1 = Question.query.get(question_id)
         if question1 is None:
             raise APIException('Question not found', status_code=404)
         db.session.delete(question1)
